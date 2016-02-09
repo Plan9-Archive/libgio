@@ -46,11 +46,13 @@ gopen(ReadWriter* rd, void *aux)
 	memcpy(buf, rd, sizeof(ReadWriter));
 	buf->aux = aux;
 	buf->offset = 0;
-	if((buf->open(buf)) != 0){
-		buf->close(buf);
-		free(buf);
-		wunlock(giolock);
-		return -1;
+	if(buf->open != nil){
+		if((buf->open(buf)) != 0){
+			buf->close(buf);
+			free(buf);
+			wunlock(giolock);
+			return -1;
+		}
 	}
 	gio_filedes[pfd] = buf;
 	gio_filedes_st[pfd] = 1;
@@ -62,13 +64,14 @@ int
 gclose(int fd)
 {
 	ReadWriter *bf;
-	int rval;
+	int rval = 0;
 
 	if(gio_filedes_st[fd] == 0)
 		return -1;
 	wlock(giolock);
 	bf = gio_filedes[fd];
-	rval = bf->close(bf);
+	if(bf->close != nil)
+		rval = bf->close(bf);
 	free(bf);
 	gio_filedes_st[fd] = 0;
 	gio_filedes[fd] = nil;

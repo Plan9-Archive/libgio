@@ -11,8 +11,10 @@ gwrite(int fd, void *buf, long len, vlong offset)
 	rd = getrdstruct(fd);
 	if(rd == nil)
 		return -1;
+	if(rd->pwrite == nil)
+		return -2;
 	wlock(rd);
-	rval = rd->gwrite(rd, buf, len, offset);
+	rval = rd->pwrite(rd, buf, len, offset);
 	wunlock(rd);
 	return rval;
 }

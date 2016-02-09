@@ -11,6 +11,8 @@ gread(int fd, void *bf, long len, vlong offset)
 	rd = getrdstruct(fd);
 	if(rd == nil)
 		return -1;
+	if(rd->pread == nil)
+		return -2;
 	rlock(rd);
 	rval = rd->pread(rd, bf, offset, len);
 	runlock(rd);
