@@ -1,0 +1,42 @@
+libgio -- Programmable Virtual Files or Streams
+
+Synopsis
+	libgio is a small library to approximate Go's io.Reader and
+	io.Writer interfaces, Common Lisp's grey-streams, and OpenVMS's
+	programmable I/O. libgio takes a struct with the methods to read
+	or write to the stream, open and close the stream, and some other
+	stuff, and returns a libgio file descriptor. You can then use this
+	descriptor to read, write, seek, open, and close the stream. Note
+	that these are not normal file descriptors, but they look like it,
+	and basically feel like it.
+
+struct ReadWriter {
+	RWLock;
+	int (*open)(ReadWriter*);
+	int (*close)(ReadWriter*);
+	long (*pread)(ReadWriter*, void*, long, vlong);
+	long (*pwrite)(ReadWriter*, void*, long, vlong);
+	void *aux;
+	u64int offset;
+	u64int length;
+};
+
+int gopen(ReadWriter*, void *aux)
+	This function takes a ReadWriter struct and auxillary data, and
+	creates a gio file descriptor.
+
+int gclose(int gio_fd)
+	This destroys the gio file descriptor.
+
+long gread(int gio_fd, void *buf, long len, vlong off)
+	This is functionally the same as pread, but operates on a gio fd.
+
+long gwrite(int gio_fd, void *buf, long len, vlong off)
+	This is functionally the same as pwrite, but operates on a gio fd.
+
+vlong gseek(int gio_fd, vlong off, int whence)
+	This is functionally the same as seek but operates on a gio fd.
+
+int fd2gio(int fd)
+	This takes a system fd and returns a gio fd.
+
