@@ -8,17 +8,31 @@ Synopsis
 	stuff, and returns a libgio file descriptor. You can then use this
 	descriptor to read, write, seek, open, and close the stream. Note
 	that these are not normal file descriptors, but they look like it,
-	and basically feel like it.
+	and basically feel like it. libgio is, by default, thread safe and
+	locks the ReadWriter struct on every operation. As a user of
+	libgio you shouldn't need to add any locks in your methods unless
+	those functions need to keep some other data safe.
 
-struct ReadWriter {
-	RWLock;
-	int (*open)(ReadWriter*);
-	int (*close)(ReadWriter*);
-	long (*pread)(ReadWriter*, void*, long, vlong);
-	long (*pwrite)(ReadWriter*, void*, long, vlong);
-	void *aux;
-	u64int offset;
-	u64int length;
+History
+	libgio was initially implemented as part of ngfs's volume manager
+	to allow most operations be able to happen on disk, mirror, span,
+	p1p, and p2p devices. This reduced the amount of code that needed
+	to be written and made sure that all features could work no matter
+	the vdev. This also made adding vdev types much easier because you
+	didn't have to edit much code. The difference between libgio and
+	gio.c in ngfs is the libgio lengths and offsets are bytes while
+	gio.c's are blocks.
+
+Bugs
+	yes.
+
+--------------------------------------------------------------------------
+
+Usage struct ReadWriter {
+	RWLock; int (*open)(ReadWriter*); int (*close)(ReadWriter*); long
+	(*pread)(ReadWriter*, void*, long, vlong); long
+	(*pwrite)(ReadWriter*, void*, long, vlong); void *aux; u64int
+	offset; u64int length;
 };
 
 int gopen(ReadWriter*, void *aux)
