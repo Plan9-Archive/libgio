@@ -7,7 +7,7 @@ int fdclose(ReadWriter*);
 long fdread(ReadWriter*, void*, long, vlong);
 long fdwrite(ReadWriter*, void*, long, vlong);
 
-ReadWriter fdrdwr {
+ReadWriter fdrdwr = {
 	.open = fdopen,
 	.close = fdclose,
 	.pread = fdread,
@@ -54,6 +54,6 @@ fd2gio(int fd)
 {
 	void *x = malloc(sizeof(int));
 	memcpy(x, &fd, sizeof(int));
-	return gopen(fdrdwr, x);
+	return gopen(&fdrdwr, x);
 }
 

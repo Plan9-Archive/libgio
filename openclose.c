@@ -21,12 +21,13 @@ getnext(void)
 ReadWriter*
 getrdstruct(int fd)
 {
-	rlock(giolock);
+	rlock(&giolock);
 	ReadWriter *rval;
 	if(gio_filedes_st[fd] != 1)
 		rval = nil;
 	rval = gio_filedes[fd];
-	runlock(giolock);
+	runlock(&giolock);
+	return rval;
 }
 
 int
@@ -35,9 +36,9 @@ gopen(ReadWriter* rd, void *aux)
 	int pfd;
 	ReadWriter *buf;
 
-	wlock(giolock);
+	wlock(&giolock);
 	if(pfd == -1){
-		wunlock(giolock);
+		wunlock(&giolock);
 		return -1;
 	}
 	buf = malloc(sizeof(ReadWriter));
@@ -50,13 +51,13 @@ gopen(ReadWriter* rd, void *aux)
 		if((buf->open(buf)) != 0){
 			buf->close(buf);
 			free(buf);
-			wunlock(giolock);
+			wunlock(&giolock);
 			return -1;
 		}
 	}
 	gio_filedes[pfd] = buf;
 	gio_filedes_st[pfd] = 1;
-	wunlock(giolock);
+	wunlock(&giolock);
 	return pfd;
 }
 
@@ -68,14 +69,14 @@ gclose(int fd)
 
 	if(gio_filedes_st[fd] == 0)
 		return -1;
-	wlock(giolock);
+	wlock(&giolock);
 	bf = gio_filedes[fd];
 	if(bf->close != nil)
 		rval = bf->close(bf);
 	free(bf);
 	gio_filedes_st[fd] = 0;
 	gio_filedes[fd] = nil;
-	wunlock(giolock);
+	wunlock(&giolock);
 	return rval;
 }
 
