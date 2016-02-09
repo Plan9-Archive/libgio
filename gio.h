@@ -1,3 +1,6 @@
+#pragma lib "libgio.a"
+#pragma src "/sys/src/libgio"
+
 typedef struct ReadWriter ReadWriter;
 
 struct ReadWriter {
