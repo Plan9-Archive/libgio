@@ -37,6 +37,7 @@ gopen(ReadWriter* rd, void *aux)
 	ReadWriter *buf;
 
 	wlock(&giolock);
+	pfd = getnext();
 	if(pfd == -1){
 		wunlock(&giolock);
 		return -1;
