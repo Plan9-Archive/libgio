@@ -91,4 +91,4 @@ will return -2 if a function pointer is nil.
 .SH HISTORY
 First appeared as part of
 .IR ngfs (8)
-in September 2015; imported into 9front February 2016.
+in September 2015
