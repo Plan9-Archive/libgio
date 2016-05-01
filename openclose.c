@@ -22,12 +22,12 @@ ReadWriter*
 getrdstruct(int fd)
 {
 	rlock(&giolock);
-	ReadWriter *rval;
-	if(gio_filedes_st[fd] != 1)
-		rval = nil;
-	rval = gio_filedes[fd];
+	if(gio_filedes_st[fd] != 1){
+		runlock(&giolock);
+		return nil;
+	}
 	runlock(&giolock);
-	return rval;
+	return gio_filedes[fd];
 }
 
 int

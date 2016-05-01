@@ -6,7 +6,7 @@ long
 gread(int fd, void *bf, long len, vlong offset)
 {
 	ReadWriter *rd;
-	long rval = 0;
+	long rval;
 	
 	rd = getrdstruct(fd);
 	if(rd == nil)
