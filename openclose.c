@@ -21,13 +21,15 @@ getnext(void)
 ReadWriter*
 getrdstruct(int fd)
 {
+	ReadWriter *rval;
 	rlock(&giolock);
 	if(gio_filedes_st[fd] != 1){
 		runlock(&giolock);
 		return nil;
 	}
+	rval = gio_filedes[fd];
 	runlock(&giolock);
-	return gio_filedes[fd];
+	return rval;
 }
 
 int
